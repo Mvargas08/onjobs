@@ -221,7 +221,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/UserCV"
+            $ref: "#/definitions/UserExp"
       responses:
         "200":
           description: Success
@@ -296,7 +296,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/UserCV"
+            $ref: "#/definitions/UserStudies"
       responses:
         "200":
           description: Success
@@ -385,11 +385,18 @@ definitions:
       email:
         description: Correo del usuario
         type: string
-  UserCV:
+  UserExp:
     type: object
     properties:
-      nombre:
+      name:
         description: Nombre empresa
+        type: string
+  UserStudies:
+    type: object
+    properties:
+      name:
+        description: Nombre empresa
+        type: string
   OnJobsResponse:
     type: string
   ErrorResponse:
