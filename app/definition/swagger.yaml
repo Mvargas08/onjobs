@@ -1,0 +1,396 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: OnJobs
+  description: API de servicios de OnJobs
+# during dev, should point to your local machine
+host: localhost:3000
+# basePath prefixes all resource paths 
+basePath: /onjobs/v1
+#
+tags:
+  - name: Usuario
+    description: Servicios de Usuario
+  - name: Empresa
+    description: Servicios de Empresa
+  - name: Curriculum Vitae
+    description: Servicios de Curriculum Vitae
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /users/:
+    get:
+      tags:
+        - Usuario
+      description: Listar todos los usuarios
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Usuario
+      description: Registrar usuario
+      # used as the method name of the controller
+      operationId: addUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users/:id/:
+    get:
+      tags:
+        - Usuario
+      description: Obtener usuario por ID
+      # used as the method name of the controller
+      operationId: findById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Usuario
+      description: Actualizar usuario
+      # used as the method name of the controller
+      operationId: updateUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - Usuario
+      description: Eliminar usuario
+      # used as the method name of the controller
+      operationId: deleteUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users/social/login/:
+    post:
+      tags:
+        - Usuario
+      description: Registrar usuario
+      # used as the method name of the controller
+      operationId: facebook
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserSocialLogin"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /cv/experience/:id/:
+    get:
+      tags:
+        - Curriculum Vitae
+      description: Obtener curriculum vitae
+      # used as the method name of the controller
+      operationId: findExpById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Curriculum Vitae
+      description: Actualizar CV de usuario
+      # used as the method name of the controller
+      operationId: updateExpUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserCV"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - Curriculum Vitae
+      description: Eliminar CV usuario
+      # used as the method name of the controller
+      operationId: deleteExpUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /cv/studies/:id/:
+    get:
+      tags:
+        - Curriculum Vitae
+      description: Obtener curriculum vitae
+      # used as the method name of the controller
+      operationId: findStudiesById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Curriculum Vitae
+      description: Actualizar CV de usuario
+      # used as the method name of the controller
+      operationId: updateStudiesUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserCV"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - Curriculum Vitae
+      description: Eliminar CV usuario
+      # used as the method name of the controller
+      operationId: deleteStudiesUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+# complex objects have schema definitions
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        description: Correo del usuario
+        type: string
+      name:
+        description: Nombre
+        type: string
+      lastname:
+        description: Apellido
+        type: string
+      rut:
+        description: Rut
+        type: number
+      fechaNacimiento:
+        description: Fecha de Nacimiento
+        type: string
+        format: date
+      profession:
+        description: Profesión
+        type: string
+      experience:
+        description: Experiencia
+        type: string
+      region:
+        description: Region
+        type: number
+      city:
+        description: Ciudad
+        type: number
+      description:
+        description: Descripción
+        type: string
+      flag:
+        description: Recomienda
+        type: boolean
+      recomendation:
+        description: Recomendación
+        type: string
+      score:
+        description: Puntuación
+        type: number
+  UserSocialLogin:
+    type: object
+    properties:
+      social:
+        description: Facebook - Google
+        type: string
+      email:
+        description: Correo del usuario
+        type: string
+  UserCV:
+    type: object
+    properties:
+      nombre:
+        description: Nombre empresa
+  OnJobsResponse:
+    type: string
+  ErrorResponse:
+    type: string
