@@ -15,6 +15,10 @@ tags:
     description: Servicios de Empresa
   - name: Curriculum Vitae
     description: Servicios de Curriculum Vitae
+  - name: Token
+    description: Servicios de Autorización
+  - name: WebPay
+    description: Servicios de metodo de pago
 # 
 schemes:
   # tip: remove http to make production-grade
@@ -360,6 +364,213 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /company/:
+    get:
+      tags:
+        - Empresa
+      description: Listar todas las empresas
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Empresa
+      description: Registrar empresa
+      # used as the method name of the controller
+      operationId: addCompany
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Company"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /company/:id/:
+    get:
+      tags:
+        - Empresa
+      description: Obtener empresa por ID
+      # used as the method name of the controller
+      operationId: findCompanyById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - Empresa
+      description: Actualizar empresa
+      # used as the method name of the controller
+      operationId: updateCompany
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Company"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - Empresa
+      description: Eliminar empresa
+      # used as the method name of the controller
+      operationId: deleteCompany
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /company/:id/login/:
+    post:
+      tags:
+        - Empresa
+      description: Login empresa
+      # used as the method name of the controller
+      operationId: companyLogin
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/CompanyLogin"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /token/:id/:
+    post:
+      tags:
+        - Token
+      description: Generar JWT
+      # used as the method name of the controller
+      operationId: generateToken
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/JWT"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /webpay/:id/:
+    post:
+      tags:
+        - WebPay
+      description: Metodo de pago
+      # used as the method name of the controller
+      operationId: webpay
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/WebPay"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 # complex objects have schema definitions
 definitions:
   User:
@@ -377,7 +588,7 @@ definitions:
       rut:
         description: Rut
         type: number
-      fechaNacimiento:
+      birthdate:
         description: Fecha de Nacimiento
         type: string
         format: date
@@ -438,14 +649,111 @@ definitions:
   UserExp:
     type: object
     properties:
-      name:
+      companyName:
         description: Nombre empresa
+        type: string
+      title:
+        description: Titulo obtenido
+        type: string
+      location:
+        description: Ubicación de la empresa
+        type: string
+      date:
+        description: Fecha de ingreso
+        type: string
+      dateOut:
+        description: Fecha de salida (True - Actualidad)
+        type: string
+      description:
+        description: Descripción
         type: string
   UserStudies:
     type: object
     properties:
+      college:
+        description: Centro de estudios
+        type: string
+      date:
+        description: Fecha de título
+        type: string
+      titration:
+        description: Titulación
+        type: string
+      discipline:
+        description: Disciplina academica
+        type: string
+      average:
+        description: Promedio
+        type: string
+      activities:
+        description: Actividades extracurriculares
+        type: string
+  Company:
+    type: object
+    properties:
       name:
         description: Nombre empresa
+        type: string
+      email:
+        description: Email de empresa
+        type: string
+      phone:
+        description: Telefono de empresa
+        type: number
+      businessName:
+        description: Razón Social
+        type: string
+      rut:
+        description: Rut de empresa
+        type: string
+      entry:
+        description: Rubro de la empresa
+        type: string
+      businessTurn:
+        description: Giro de la empresa
+        type: string
+      region:
+        description: Región
+        type: string
+      city:
+        description: Ciudad
+        type: string
+      location:
+        description: Dirección
+        type: string
+  CompanyLogin:
+    type: object
+    properties:
+      email:
+        description: Email de empresa
+        type: string
+      password:
+        description: Contraseña
+        type: string
+        format: password
+  JWT:
+    type: object
+    properties:
+      email:
+        description: Email de usuario o empresa
+        type: string
+  WebPay:
+    type: object
+    properties:
+      creditCard:
+        description: Tarjeta de Crédito
+        type: string
+      month:
+        description: Mes de expiración
+        type: number
+      year:
+        description: Año de expiración
+        type: number
+      rut:
+        description: Rut de usuario
+        type: string
+      nameCard:
+        description: Actividades extracurriculares
         type: string
   OnJobsResponse:
     type: string

@@ -1,73 +1,162 @@
-var mongoose = require('mongoose');  
+var jwt    = require('jsonwebtoken');
+var config = require('../util/config');
 var User = require('../models/user');
 
 //GET - Return all users in the DB
-exports.findAllUsers = function(req, res) {  
-    User.find(function(err, users) {
-    if(err) res.send(500, err.message);
-
-    console.log('GET /objobs/v1/user')
-        res.send(users);
+exports.findAllUsers = function(req, res) {
+    var token = req.headers.authorization;
+    // verifies secret and checks exp
+    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+        if (err) {
+          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          console.log('INFO: Fallo en la autenticación de Token: ' + err);
+        } else {
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            User.find(function(err, users) {
+                if(err) {
+                    res.send({ code: 1, desc: err.message});
+                } else {
+                    console.log('GET /objobs/v1/user')
+                    res.send(users);
+                }
+            });
+        }
     });
 };
 
 //GET - Return a User with specified ID
-exports.findById = function(req, res) {  
-    User.findById(req.params.id, function(err, user) {
-    if(err) return res.send(500, err.message);
-
-    console.log('GET /objobs/v1/user/' + req.params.id);
-        res.send(user);
+exports.findById = function(req, res) {
+    var token = req.headers.authorization;
+    // verifies secret and checks exp
+    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+        if (err) {
+          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          console.log('INFO: Fallo en la autenticación de Token: ' + err);
+        } else {
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            User.findById(req.params.id, function(err, user) {
+                if(err) {
+                    res.send({ code: 1, desc: err.message});
+                } else {
+                    console.log('GET /objobs/v1/user/' + req.params.id);
+                    res.send(user);
+                }
+            });
+        }
     });
 };
 
 //POST - Insert a new User in the DB
-exports.addUser = function(req, res) {  
-    console.log('POST');
-    console.log(req.body);
+exports.addUser = function(req, res) {
 
-    var user = new User({
-        email:    req.body.email,
-        name:     req.body.name,
-        lastname:  req.body.lastname,
-        profession:   req.body.profession,
-        position:  req.body.position,
-        experience:    req.body.experience
-    });
+    var token = req.headers.authorization;
+    // verifies secret and checks exp
+    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+        if (err) {
+          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          console.log('INFO: Fallo en la autenticación de Token: ' + err);
+        } else {
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            var user = new User({
+                email: req.body.email,
+                name: req.body.name,
+                lastname: req.body.lastname,
+                rut: req.body.rut,
+                birthdate: req.body.birthdate,
+                profession: req.body.profession,
+                experience: req.body.experience,
+                region: req.body.region,
+                city: req.body.city,
+                descripcion: req.body.descripcion,
+                flag: req.body.flag,
+                recomendation: req.body.recomendation,
+                score: req.body.score
+            });
 
-    user.save(function(err, u) {
-        if(err) return res.status(500).send( err.message);
-        res.send(u);
+            user.save(function(err, u) {
+                if(err) res.send({ code: 1, desc: err.message});
+                res.send(u);
+            });
+        }
     });
 };
 
 //PUT - Update a register already exists
-exports.updateUser = function(req, res) {  
-    User.findById(req.params.id, function(err, user) {
-        user.email   = req.body.email;
-        user.name    = req.body.name;
-        user.lastname = req.body.lastname;
-        user.profession  = req.body.profession;
-        user.position = req.body.position;
-        user.experience   = req.body.experience;
+exports.updateUser = function(req, res) {
+    
+    var email = req.body.email || '';
+    var name = req.body.name || '';
+    var lastname = req.body.lastname || '';
+    var rut = req.body.rut || '';
+    var birthdate = req.body.birthdate || '';
+    var profession = req.body.profession || '';
+    var experience = req.body.experience || '';
+    var region = req.body.region || '';
+    var city = req.body.city || '';
+    var descripcion = req.body.descripcion || '';
+    var flag = req.body.flag || '';
+    var recomendation = req.body.recomendation || '';
+    var score = req.body.score || '';
 
-        user.save(function(err) {
-            if(err) return res.status(500).send(err.message);
-      		res.send(user);
-        });
+    var token = req.headers.authorization;
+    // verifies secret and checks exp
+    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+        if (err) {
+          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          console.log('INFO: Fallo en la autenticación de Token: ' + err);
+        } else {
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            User.findById(req.params.id, function(err, user) {
+                
+                if (email != '') user.email = email;                
+                if (name != '') user.name = name;
+                if (lastname != '') user.lastname = lastname;
+                if (rut != '') user.rut = rut;
+                if (birthdate != '') user.birthdate = birthdate;
+                if (profession != '') user.profession = profession;
+                if (experience != '') user.experience = experience;
+                if (region != '') user.region = region;
+                if (city != '') user.city = city;
+                if (descripcion != '') user.descripcion = descripcion;
+                if (flag != '') user.flag = flag;
+                if (recomendation != '') user.recomendation = recomendation;
+                if (score != '') user.score = score;
+
+                user.save(function(err) {
+                    if(err) res.send({ code: 1, desc: err.message});
+                    res.send(user);
+                });
+            });
+        }
     });
 };
 
 //DELETE - Delete a User with specified ID
-exports.deleteUser = function(req, res) {  
-    User.findById(req.params.id, function(err, user) {
-        if (user) {
-            user.remove(function(err) {
-                if(err) return res.status(500).send(err.message);
-                res.send({ code: 0, desc: 'User deleted'});
-            });
+exports.deleteUser = function(req, res) {
+
+    var token = req.headers.authorization;
+    // verifies secret and checks exp
+    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+        if (err) {
+          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
-            res.send({ code: 1, desc: "User don't exist"});
+            // if everything is good, save to request for use in other routes
+            req.decoded = decoded;
+            User.findById(req.params.id, function(err, user) {
+                if (user) {
+                    user.remove(function(err) {
+                        if(err) res.send({ code: 1, desc: err.message});
+                        res.send({ code: 0, desc: 'User deleted'});
+                    });
+                } else {
+                    res.send({ code: 2, desc: "User don't exist"});
+                }
+            });
         }
     });
 };

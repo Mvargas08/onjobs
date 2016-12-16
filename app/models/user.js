@@ -5,9 +5,16 @@ var user = new Schema({
 	email: String,
 	name: String,
 	lastname: String,
+	rut: String,
+	birthdate: String,
 	profession: String,
-	position: String,
 	experience: String,
+	region: String,
+	city: String,
+	description: String,
+	flag: { type: Boolean, default: false },
+	recomendation: String,
+	score: Number,
 	status: { type: Boolean, default: false },
 	token: String
 });
