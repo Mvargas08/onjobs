@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var company = new Schema({
 	email: String,
+	password: String,
 	name: String,
 	phone: Number,
 	businessName: String,

@@ -605,11 +605,6 @@ paths:
       # used as the method name of the controller
       operationId: companyLogin
       parameters:
-        - name: authorization
-          in: header
-          description: Json Web Token
-          required: true
-          type: string
         - name: data
           in: body
           required: true
@@ -805,6 +800,10 @@ definitions:
       email:
         description: Email de empresa
         type: string
+      password:
+        description: Contraseña de empresa
+        type: string
+        format: password
       phone:
         description: Telefono de empresa
         type: number

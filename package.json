@@ -1,7 +1,6 @@
 {
   "name": "despachalo",
   "description": "OnJobs",
-  "version": "desp - v1",
   "main": "app.js",
   "dependencies": {
     "express": "3.x.x",
@@ -10,6 +9,7 @@
     "nodemailer": "2.5.0",
     "request": "2.74.0",
     "syntax-error": "1.1.6",
+    "bcrypt": "0.8.7",
     "body-parser": "~1.0.1"
   },
   "api": {
