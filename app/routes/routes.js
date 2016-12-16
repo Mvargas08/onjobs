@@ -15,6 +15,7 @@ module.exports = function (app) {
 	app.get('/onjobs/v1/company/:id', companyController.findCompanyById);
 	app.put('/onjobs/v1/company/:id', companyController.updateCompany);
 	app.delete('/onjobs/v1/company/:id', companyController.deleteCompany);
+	app.post('/onjobs/v1/company/:id/login', companyController.companyLogin);
 
 	app.post('/onjobs/v1/token/:id', jwtController.generateToken);
 }
