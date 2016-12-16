@@ -1,9 +1,10 @@
 var jwt    = require('jsonwebtoken');
 var config = require('../util/config');
 var User = require('../models/user');
+var Company = require('../models/company');
 
-//GET - Return all users in the DB
-exports.findAllUsers = function(req, res) {
+//GET - Return all company in the DB
+exports.findAllCompanys = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function(err, decoded) {
@@ -13,20 +14,20 @@ exports.findAllUsers = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.find(function(err, users) {
+            Company.find(function(err, companys) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
-                    console.log('GET /objobs/v1/user')
-                    res.send(users);
+                    console.log('GET /objobs/v1/company')
+                    res.send(companys);
                 }
             });
         }
     });
 };
 
-//GET - Return a User with specified ID
-exports.findById = function(req, res) {
+//GET - Return a company with specified ID
+exports.findCompanyById = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function(err, decoded) {
@@ -36,20 +37,25 @@ exports.findById = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.findById(req.params.id, function(err, user) {
-                if(err) {
-                    res.send({ code: 1, desc: err.message});
-                } else {
-                    console.log('GET /objobs/v1/user/' + req.params.id);
-                    res.send(user);
-                }
-            });
+            var companyId = req.params.id || '';
+            if (companyId =! '') {
+                Company.findById(companyId, function(err, company) {
+                    if(err) {
+                        res.send({ code: 1, desc: err.message});
+                    } else {
+                        console.log('GET /objobs/v1/company/' + companyId);
+                        res.send(company);
+                    }
+                });
+            } else {
+                res.send({ code: 1, desc: 'Company ID is required'});
+            }
         }
     });
 };
 
-//POST - Insert a new User in the DB
-exports.addUser = function(req, res) {
+//POST - Insert a new Company in the DB
+exports.addCompany = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -60,46 +66,44 @@ exports.addUser = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            var user = new User({
+            var company = new Company ({
                 email: req.body.email,
                 name: req.body.name,
-                lastname: req.body.lastname,
+                phone: req.body.lastname,
+                businessName: req.body.businessName,
                 rut: req.body.rut,
-                birthdate: req.body.birthdate,
-                profession: req.body.profession,
-                experience: req.body.experience,
+                entry: req.body.entry,
+                businessTurn: req.body.businessTurn,
                 region: req.body.region,
                 city: req.body.city,
-                descripcion: req.body.descripcion,
+                location: req.body.location,
                 flag: req.body.flag,
-                recomendation: req.body.recomendation,
-                score: req.body.score
+                recomendation: req.body.recomendation
             });
 
-            user.save(function(err, u) {
+            company.save(function(err, c) {
                 if(err) res.send({ code: 1, desc: err.message});
-                res.send(u);
+                res.send(c);
             });
         }
     });
 };
 
 //PUT - Update a register already exists
-exports.updateUser = function(req, res) {
+exports.updateCompany = function(req, res) {
     
     var email = req.body.email || '';
     var name = req.body.name || '';
-    var lastname = req.body.lastname || '';
+    var phone = req.body.phone || '';
+    var businessName = req.body.businessName || '';
     var rut = req.body.rut || '';
-    var birthdate = req.body.birthdate || '';
-    var profession = req.body.profession || '';
-    var experience = req.body.experience || '';
+    var entry = req.body.entry || '';
+    var businessTurn = req.body.businessTurn || '';
     var region = req.body.region || '';
     var city = req.body.city || '';
-    var descripcion = req.body.descripcion || '';
+    var location = req.body.location || '';
     var flag = req.body.flag || '';
     var recomendation = req.body.recomendation || '';
-    var score = req.body.score || '';
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -110,39 +114,37 @@ exports.updateUser = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            var userID = req.params.id || '';
-            if (userID != '') {
-                User.findById(userID, function(err, user) {
-                    
-                    if (email != '') user.email = email;                
-                    if (name != '') user.name = name;
-                    if (lastname != '') user.lastname = lastname;
-                    if (rut != '') user.rut = rut;
-                    if (birthdate != '') user.birthdate = birthdate;
-                    if (profession != '') user.profession = profession;
-                    if (experience != '') user.experience = experience;
-                    if (region != '') user.region = region;
-                    if (city != '') user.city = city;
-                    if (descripcion != '') user.descripcion = descripcion;
-                    if (flag != '') user.flag = flag;
-                    if (recomendation != '') user.recomendation = recomendation;
-                    if (score != '') user.score = score;
+            var companyId = req.params.id || '';
+            if (companyId =! '') {
+                Company.findById(companyId, function(err, company) {
+                
+                    if (email != '') company.email = email;                
+                    if (name != '') company.name = name;
+                    if (phone != '') company.phone = phone;
+                    if (businessName != '') company.businessName = businessName;
+                    if (rut != '') company.rut = rut;
+                    if (entry != '') company.entry = entry;
+                    if (businessTurn != '') company.businessTurn = businessTurn;
+                    if (region != '') company.region = region;
+                    if (city != '') company.city = city;
+                    if (location != '') company.location = location;
+                    if (flag != '') company.flag = flag;
+                    if (recomendation != '') company.recomendation = recomendation;
 
-                    user.save(function(err) {
+                    company.save(function(c) {
                         if(err) res.send({ code: 1, desc: err.message});
-                        res.send(user);
+                        res.send(c);
                     });
                 });
             } else {
-                res.send({ code: 1, desc: 'User ID is required'});
+                res.send({ code: 1, desc: 'Company ID is required'});
             }
-
         }
     });
 };
 
-//DELETE - Delete a User with specified ID
-exports.deleteUser = function(req, res) {
+//DELETE - Delete a Company with specified ID
+exports.deleteCompany = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -153,16 +155,21 @@ exports.deleteUser = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.findById(req.params.id, function(err, user) {
-                if (user) {
-                    user.remove(function(err) {
-                        if(err) res.send({ code: 1, desc: err.message});
-                        res.send({ code: 0, desc: 'User deleted'});
-                    });
-                } else {
-                    res.send({ code: 2, desc: "User don't exist"});
-                }
-            });
+            var companyId = req.params.id || '';
+            if (companyId =! '') {
+                Company.findById(companyId, function(err, company) {
+                    if (company) {
+                        company.remove(function(err) {
+                            if(err) res.send({ code: 1, desc: err.message});
+                            res.send({ code: 0, desc: 'Company deleted'});
+                        });
+                    } else {
+                        res.send({ code: 2, desc: "Company don't exist"});
+                    }
+                });
+            } else {
+                res.send({ code: 1, desc: 'Company ID is required'});
+            }
         }
     });
 };

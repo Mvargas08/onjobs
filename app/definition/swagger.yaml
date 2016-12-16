@@ -36,6 +36,8 @@ paths:
       tags:
         - Usuario
       description: Listar todos los usuarios
+      # used as the method name of the controller
+      operationId: findAllUsers
       parameters:
         - name: authorization
           in: header
@@ -85,7 +87,7 @@ paths:
     get:
       tags:
         - Usuario
-      description: Obtener usuario por ID
+      description: Obtener usuario (ID de usuario)
       # used as the method name of the controller
       operationId: findById
       parameters:
@@ -105,10 +107,10 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-    post:
+    put:
       tags:
         - Usuario
-      description: Actualizar usuario
+      description: Actualizar usuario (ID de usuario)
       # used as the method name of the controller
       operationId: updateUser
       parameters:
@@ -136,7 +138,7 @@ paths:
     delete:
       tags:
         - Usuario
-      description: Eliminar usuario
+      description: Eliminar usuario (ID de usuario)
       # used as the method name of the controller
       operationId: deleteUser
       parameters:
@@ -160,7 +162,7 @@ paths:
     post:
       tags:
         - Usuario
-      description: Registrar usuario
+      description: Login de usuario (Social)
       # used as the method name of the controller
       operationId: facebook
       parameters:
@@ -214,13 +216,13 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /cv/experience/:id/:
+  /cv/experience/user/:id/:
     get:
       tags:
         - Curriculum Vitae
-      description: Obtener curriculum vitae
+      description: Obtener todas las experiencias (ID de usuario)
       # used as the method name of the controller
-      operationId: findExpById
+      operationId: findExpByIdUser
       parameters:
         - name: authorization
           in: header
@@ -241,7 +243,59 @@ paths:
     post:
       tags:
         - Curriculum Vitae
-      description: Actualizar CV de usuario
+      description: Registrar experiencia de usuario (ID de usuario)
+      # used as the method name of the controller
+      operationId: addExpUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserExp"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /cv/experience/:id/:
+    get:
+      tags:
+        - Curriculum Vitae
+      description: Obtener experiencia (ID de experiencia)
+      # used as the method name of the controller
+      operationId: findExpById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+        - Curriculum Vitae
+      description: Actualizar experiencia de usuario (ID de experiencia)
       # used as the method name of the controller
       operationId: updateExpUser
       parameters:
@@ -269,7 +323,7 @@ paths:
     delete:
       tags:
         - Curriculum Vitae
-      description: Eliminar CV usuario
+      description: Eliminar experiencia usuario (ID de experiencia)
       # used as the method name of the controller
       operationId: deleteExpUser
       parameters:
@@ -289,13 +343,13 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /cv/studies/:id/:
+  /cv/studies/user/:id/:
     get:
       tags:
         - Curriculum Vitae
-      description: Obtener curriculum vitae
+      description: Obtener estudios del usuario (ID de usuario)
       # used as the method name of the controller
-      operationId: findStudiesById
+      operationId: findStudiesByIdUser
       parameters:
         - name: authorization
           in: header
@@ -316,7 +370,59 @@ paths:
     post:
       tags:
         - Curriculum Vitae
-      description: Actualizar CV de usuario
+      description: Regstrar estudios de usuario (ID de usuario)
+      # used as the method name of the controller
+      operationId: addStudiesUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserStudies"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /cv/studies/:id/:
+    get:
+      tags:
+        - Curriculum Vitae
+      description: Obtener estudios del usuario (ID de estudio)
+      # used as the method name of the controller
+      operationId: findStudiesById
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+        - Curriculum Vitae
+      description: Actualizar estudios de usuario (ID de estudio)
       # used as the method name of the controller
       operationId: updateStudiesUser
       parameters:
@@ -344,7 +450,7 @@ paths:
     delete:
       tags:
         - Curriculum Vitae
-      description: Eliminar CV usuario
+      description: Eliminar estudio de usuario (ID de usuario)
       # used as the method name of the controller
       operationId: deleteStudiesUser
       parameters:
@@ -369,6 +475,8 @@ paths:
       tags:
         - Empresa
       description: Listar todas las empresas
+      # used as the method name of the controller
+      operationId: findAllCompanys
       parameters:
         - name: authorization
           in: header
@@ -418,7 +526,7 @@ paths:
     get:
       tags:
         - Empresa
-      description: Obtener empresa por ID
+      description: Obtener empresa (ID de empresa)
       # used as the method name of the controller
       operationId: findCompanyById
       parameters:
@@ -438,10 +546,10 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-    post:
+    put:
       tags:
         - Empresa
-      description: Actualizar empresa
+      description: Actualizar empresa (ID de Empresa)
       # used as the method name of the controller
       operationId: updateCompany
       parameters:
@@ -469,7 +577,7 @@ paths:
     delete:
       tags:
         - Empresa
-      description: Eliminar empresa
+      description: Eliminar empresa (ID de Empresa)
       # used as the method name of the controller
       operationId: deleteCompany
       parameters:
@@ -720,6 +828,12 @@ definitions:
         type: string
       location:
         description: Dirección
+        type: string
+      flag:
+        description: Recomienda
+        type: boolean
+      recomendation:
+        description: Recomendación
         type: string
   CompanyLogin:
     type: object
