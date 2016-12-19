@@ -4,26 +4,34 @@ module.exports = function (app) {
 	var CompanyController = require('../controllers/companyController');
 	var ExperienceController = require('../controllers/experienceController');
 	var StudyController = require('../controllers/studyController');
+	var Recommend = require('../controllers/recommendController');
 	var jwtController = require('../controllers/jwtController');
 
+	// Usuarios
 	app.get('/onjobs/v1/users', UserController.findAllUsers);
 	app.post('/onjobs/v1/users', UserController.addUser);
 	app.get('/onjobs/v1/users/:id', UserController.findById);
 	app.put('/onjobs/v1/users/:id', UserController.updateUser);
 	app.delete('/onjobs/v1/users/:id', UserController.deleteUser);
 
+	// Recomiendan
+	app.get('/onjobs/v1/recommend', Recommend.getRecommendations);
+
+	// Curriculum Vitae - Experiencia
 	app.get('/onjobs/v1/cv/experience/user/:id', ExperienceController.findExpByIdUser);
 	app.post('/onjobs/v1/cv/experience/user/:id', ExperienceController.addExpUser);
 	app.get('/onjobs/v1/cv/experience/:id', ExperienceController.findExpById);
 	app.put('/onjobs/v1/cv/experience/:id', ExperienceController.updateExpUser);
 	app.delete('/onjobs/v1/cv/experience/:id', ExperienceController.deleteExpUser);
 
+	// Curriculum Vitae - Estudios
 	app.get('/onjobs/v1/cv/studies/user/:id', StudyController.findStudiesByIdUser);
 	app.post('/onjobs/v1/cv/studies/user/:id', StudyController.addStudiesUser);
 	app.get('/onjobs/v1/cv/studies/:id', StudyController.findStudiesById);
 	app.put('/onjobs/v1/cv/studies/:id', StudyController.updateStudiesUser);
 	app.delete('/onjobs/v1/cv/studies/:id', StudyController.deleteStudiesUser);
 
+	// Empresas
 	app.get('/onjobs/v1/company', CompanyController.findAllCompanys);
 	app.post('/onjobs/v1/company', CompanyController.addCompany);
 	app.get('/onjobs/v1/company/:id', CompanyController.findCompanyById);
@@ -31,6 +39,7 @@ module.exports = function (app) {
 	app.delete('/onjobs/v1/company/:id', CompanyController.deleteCompany);
 	app.post('/onjobs/v1/company/:id/login', CompanyController.companyLogin);
 
+	// Json Web Token
 	app.post('/onjobs/v1/token/:id', jwtController.generateToken);
 	app.get('/onjobs/v1/token', jwtController.generateToken);
 }

@@ -17,6 +17,8 @@ tags:
     description: Servicios de Curriculum Vitae
   - name: Token
     description: Servicios de Autorización
+  - name: Recomiendan
+    description: Servicios de Recomiendan
   - name: WebPay
     description: Servicios de metodo de pago
 # 
@@ -453,6 +455,30 @@ paths:
       description: Eliminar estudio de usuario (ID de usuario)
       # used as the method name of the controller
       operationId: deleteStudiesUser
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /recommend/:
+    get:
+      tags:
+        - Recomiendan
+      description: Obtener entidades que recomiendan (Usuarios - Empresas)
+      # used as the method name of the controller
+      operationId: getRecommend
       parameters:
         - name: authorization
           in: header
