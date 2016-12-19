@@ -3,6 +3,7 @@ module.exports = function (app) {
 	var UserController = require('../controllers/userController');
 	var CompanyController = require('../controllers/companyController');
 	var ExperienceController = require('../controllers/experienceController');
+	var StudyController = require('../controllers/studyController');
 	var jwtController = require('../controllers/jwtController');
 
 	app.get('/onjobs/v1/users', UserController.findAllUsers);
@@ -17,6 +18,12 @@ module.exports = function (app) {
 	app.put('/onjobs/v1/cv/experience/:id', ExperienceController.updateExpUser);
 	app.delete('/onjobs/v1/cv/experience/:id', ExperienceController.deleteExpUser);
 
+	app.get('/onjobs/v1/cv/studies/user/:id', StudyController.findStudiesByIdUser);
+	app.post('/onjobs/v1/cv/studies/user/:id', StudyController.addStudiesUser);
+	app.get('/onjobs/v1/cv/studies/:id', StudyController.findStudiesById);
+	app.put('/onjobs/v1/cv/studies/:id', StudyController.updateStudiesUser);
+	app.delete('/onjobs/v1/cv/studies/:id', StudyController.deleteStudiesUser);
+
 	app.get('/onjobs/v1/company', CompanyController.findAllCompanys);
 	app.post('/onjobs/v1/company', CompanyController.addCompany);
 	app.get('/onjobs/v1/company/:id', CompanyController.findCompanyById);
@@ -25,5 +32,5 @@ module.exports = function (app) {
 	app.post('/onjobs/v1/company/:id/login', CompanyController.companyLogin);
 
 	app.post('/onjobs/v1/token/:id', jwtController.generateToken);
-	app.get('/onjobs/v1/token/', jwtController.generateToken);
+	app.get('/onjobs/v1/token', jwtController.generateToken);
 }

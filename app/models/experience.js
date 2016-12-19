@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var experience = new Schema({
-	userId: String,
+	userID: String,
 	companyName: String,
 	title: String,
 	location: String,

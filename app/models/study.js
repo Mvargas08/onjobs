@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var study = new Schema({
-	userId: String,
+	userID: String,
 	college: String,
-	date: String,
+	date: Date,
 	titration: String,
 	discipline: String,
 	average: String,

@@ -17,8 +17,12 @@ exports.findAllUsers = function(req, res) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
-                    console.log('GET /objobs/v1/user')
-                    res.send(users);
+                    if (users) {
+                        console.log('GET /objobs/v1/user')
+                        res.send(users);
+                    } else {
+                        res.send({ code: 2, desc: "Users doesn't exist"});
+                    }
                 }
             });
         }
@@ -38,10 +42,14 @@ exports.findById = function(req, res) {
             req.decoded = decoded;
             User.findById(req.params.id, function (err, user) {
                 if(err) {
-                    res.send({ code: 1, desc: err.message});
+                    res.send({ code: 1, desc: 'User ID not found :: ' + err.message});
                 } else {
-                    console.log('GET /objobs/v1/user/' + req.params.id);
-                    res.send(user);
+                    if (user) {
+                        console.log('GET /objobs/v1/user/' + req.params.id);
+                        res.send(user);
+                    } else {
+                        res.send({ code: 2, desc: "User doesn't exist"});
+                    }
                 }
             });
         }

@@ -19,8 +19,12 @@ exports.findAllCompanys = function (req, res) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
-                    console.log('GET /objobs/v1/company')
-                    res.send(companys);
+                    if (companys) {
+                        console.log('GET /objobs/v1/company')
+                        res.send(companys);
+                    } else {
+                        res.send({ code: 2, desc: "Companies doesn't exist"});
+                    }
                 }
             });
         }
@@ -42,10 +46,14 @@ exports.findCompanyById = function (req, res) {
             if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
                 Company.findById(companyId, function (err, company) {
                     if(err) {
-                        res.send({ code: 1, desc: err.message});
+                        res.send({ code: 1, desc: 'Company ID not found :: ' + err.message});
                     } else {
-                        console.log('GET /objobs/v1/company/' + companyId);
-                        res.send(company);
+                        if (company) {
+                            console.log('GET /objobs/v1/company/' + companyId);
+                            res.send(company);
+                        } else {
+                            res.send({ code: 2, desc: "Company doesn't exist"});
+                        }
                     }
                 });
             } else {

@@ -1,10 +1,10 @@
 var jwt    = require('jsonwebtoken');
 var config = require('../util/config');
 var User = require('../models/user');
-var Experience = require('../models/experience');
+var Study = require('../models/study');
 
 //GET - Return all user experiences.
-exports.findExpByIdUser = function(req, res) {
+exports.findStudiesByIdUser = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
@@ -17,12 +17,12 @@ exports.findExpByIdUser = function(req, res) {
 
             var userID = req.params.id || '';
             if (userID.match(/^[0-9a-fA-F]{24}$/)) {
-                Experience.find({userID: userID}, function (err, experiences) {
+                Study.find({userID: userID}, function (err, study) {
                     if(err) {
                         res.send({ code: 1, desc: err.message});
                     } else {
-                        console.log('GET /onjobs/v1/cv/experience/user/'+ req.params.id);
-                        res.send(experiences);
+                        console.log('GET /onjobs/v1/cv/studies/user/'+ req.params.id);
+                        res.send(study);
                     }
                 });
             } else {
@@ -33,7 +33,7 @@ exports.findExpByIdUser = function(req, res) {
 };
 
 //GET - Return an user experience
-exports.findExpById = function(req, res) {
+exports.findStudiesById = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
@@ -43,15 +43,15 @@ exports.findExpById = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            Experience.findById(req.params.id, function (err, exp) {
+            Study.findById(req.params.id, function (err, st) {
                 if(err) {
-                    res.send({ code: 1, desc: 'Experience ID not found :: ' + err.message});
+                    res.send({ code: 1, desc: 'Study ID not found :: ' + err.message});
                 } else {
-                    if (exp) {
+                    if (st) {
                         console.log('POST /onjobs/v1/cv/experience/user/'+ req.params.id);
-                        res.send(exp);
+                        res.send(st);
                     } else {
-                        res.send({ code: 2, desc: "Experience doesn't exist"});
+                        res.send({ code: 2, desc: "Study doesn't exist"});
                     }
                 }
             });
@@ -60,7 +60,7 @@ exports.findExpById = function(req, res) {
 };
 
 //POST - Insert a new User experience in the DB
-exports.addExpUser = function(req, res) {
+exports.addStudiesUser = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -74,19 +74,20 @@ exports.addExpUser = function(req, res) {
 
             var userID = req.params.id || '';
             if (userID.match(/^[0-9a-fA-F]{24}$/)) {
-                var experience = new Experience ({
+                var study = new Study ({
                     userID: userID,
-                    companyName: req.body.companyName,
-                    title: req.body.title,
-                    location: req.body.location,
+                    college: req.body.college,
                     date: req.body.date,
-                    dateOut: req.body.dateOut,
-                    description: req.body.description
+                    title: req.body.title,
+                    titration: req.body.titration,
+                    discipline: req.body.discipline,
+                    average: req.body.average,
+                    activities: req.body.activities
                 });
 
-                experience.save(function (err, exp) {
+                study.save(function (err, st) {
                     if(err) res.send({ code: 1, desc: err.message});
-                    res.send(exp);
+                    res.send(st);
                 });
             } else {
                 res.send({ code: 2, desc: 'User ID is required'});
@@ -96,14 +97,15 @@ exports.addExpUser = function(req, res) {
 };
 
 //PUT - Update a register already exists
-exports.updateExpUser = function(req, res) {
+exports.updateStudiesUser = function(req, res) {
     
-    var companyName = req.body.companyName || '';
-    var title = req.body.title || '';
-    var location = req.body.location || '';
+    var college = req.body.college || '';
     var date = req.body.date || '';
-    var dateOut = req.body.dateOut || '';
-    var description = req.body.description || '';
+    var title = req.body.title || '';
+    var titration = req.body.titration || '';
+    var discipline = req.body.discipline || '';
+    var average = req.body.average || '';
+    var activities = req.body.activities || '';
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -117,26 +119,27 @@ exports.updateExpUser = function(req, res) {
             var expID = req.params.id || '';
 
             if (expID.match(/^[0-9a-fA-F]{24}$/)) {
-                Experience.findById(expID, function (err, exp) {
-                    if (!err && exp) {
+                Study.findById(expID, function (err, study) {
+                    if (!err && study) {
+                        
+                        if (college != '') study.college = college;
+                        if (date != '') study.date = date;
+                        if (title != '') study.title = title;
+                        if (titration != '') study.titration = titration;
+                        if (discipline != '') study.discipline = discipline;
+                        if (average != '') study.average = average;
+                        if (activities != '') study.activities = activities;
 
-                        if (companyName != '') exp.companyName = companyName;
-                        if (title != '') exp.title = title;
-                        if (location != '') exp.location = location;
-                        if (date != '') exp.date = date;
-                        if (dateOut != '') exp.dateOut = dateOut;
-                        if (description != '') exp.description = description;
-
-                        exp.save(function (err, e) {
+                        study.save(function (err, e) {
                             if(err) res.send({ code: 1, desc: err.message});
                             res.send(e);
                         });
                     } else {
-                        res.send({ code: 2, desc: "Experience doesn't exist"});
+                        res.send({ code: 2, desc: "Study doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 3, desc: "Experience ID is required or doesn't exist"});
+                res.send({ code: 3, desc: "Study ID is required or doesn't exist"});
             }
 
         }
@@ -144,7 +147,7 @@ exports.updateExpUser = function(req, res) {
 };
 
 //DELETE - Delete a User experience with specified ID
-exports.deleteExpUser = function(req, res) {
+exports.deleteStudiesUser = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -155,9 +158,9 @@ exports.deleteExpUser = function(req, res) {
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            Experience.findById(req.params.id, function (err, exp) {
-                if (exp) {
-                    exp.remove(function (err) {
+            Study.findById(req.params.id, function (err, study) {
+                if (study) {
+                    study.remove(function (err) {
                         if(err) res.send({ code: 1, desc: err.message});
                         res.send({ code: 0, desc: 'Experience deleted'});
                     });
