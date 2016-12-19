@@ -1,5 +1,6 @@
 var jwt    = require('jsonwebtoken');
 var config = require('../util/config');
+var encrypt = require('../util/encrypt');
 var User = require('../models/user');
 var Company = require('../models/company');
 
@@ -7,14 +8,14 @@ var Company = require('../models/company');
 exports.findAllCompanys = function (req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            Company.find(function(err, companys) {
+            Company.find(function (err, companys) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
@@ -30,7 +31,7 @@ exports.findAllCompanys = function (req, res) {
 exports.findCompanyById = function (req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
@@ -38,8 +39,8 @@ exports.findCompanyById = function (req, res) {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             var companyId = req.params.id || '';
-            if (companyId =! '') {
-                Company.findById(companyId, function(err, company) {
+            if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
+                Company.findById(companyId, function (err, company) {
                     if(err) {
                         res.send({ code: 1, desc: err.message});
                     } else {
@@ -59,14 +60,13 @@ exports.addCompany = function (req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-
             encrypt.cryptPassword(req.body.password, function (err, hash) {
                 if (!err && hash) {
                     var password =  hash;
@@ -86,12 +86,12 @@ exports.addCompany = function (req, res) {
                         recomendation: req.body.recomendation
                     });
 
-                    company.save(function(err, c) {
+                    company.save(function (err, c) {
                         if(err) res.send({ code: 1, desc: err.message});
                         res.send(c);
                     });
                 } else {
-                    res.send({ _id: 3, descripcion: 'Error encrypt password'});
+                    res.send({ _id: 3, descripcion: 'Body must be provided or Error encrypt password :: ' + err.message});
                 }
             });
         }
@@ -116,7 +116,7 @@ exports.updateCompany = function (req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
@@ -124,29 +124,34 @@ exports.updateCompany = function (req, res) {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             var companyId = req.params.id || '';
-            if (companyId =! '') {
-                Company.findById(companyId, function(err, company) {
-                
-                    if (email != '') company.email = email;                
-                    if (name != '') company.name = name;
-                    if (phone != '') company.phone = phone;
-                    if (businessName != '') company.businessName = businessName;
-                    if (rut != '') company.rut = rut;
-                    if (entry != '') company.entry = entry;
-                    if (businessTurn != '') company.businessTurn = businessTurn;
-                    if (region != '') company.region = region;
-                    if (city != '') company.city = city;
-                    if (location != '') company.location = location;
-                    if (flag != '') company.flag = flag;
-                    if (recomendation != '') company.recomendation = recomendation;
+            if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
+                Company.findById(companyId, function (err, company) {
 
-                    company.save(function(c) {
-                        if(err) res.send({ code: 1, desc: err.message});
-                        res.send(c);
-                    });
+                    if (!err && company) {
+                        if (email != '') company.email = email;
+                        if (name != '') company.name = name;
+                        if (phone != '') company.phone = phone;
+                        if (businessName != '') company.businessName = businessName;
+                        if (rut != '') company.rut = rut;
+                        if (entry != '') company.entry = entry;
+                        if (businessTurn != '') company.businessTurn = businessTurn;
+                        if (region != '') company.region = region;
+                        if (city != '') company.city = city;
+                        if (location != '') company.location = location;
+                        if (flag != '') company.flag = flag;
+                        if (recomendation != '') company.recomendation = recomendation;
+
+                        company.save(function (err, c) {
+                            if(err) res.send({ code: 1, desc: err.message});
+                            res.send(c);
+                        });
+                    } else {
+                        console.log(err);
+                        res.send({ code: 1, desc: "Company doesn't exist"});
+                    }
                 });
             } else {
-                res.send({ code: 1, desc: 'Company ID is required'});
+                res.send({ code: 2, desc: 'Company ID is required'});
             }
         }
     });
@@ -157,7 +162,7 @@ exports.deleteCompany = function (req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
@@ -165,10 +170,10 @@ exports.deleteCompany = function (req, res) {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             var companyId = req.params.id || '';
-            if (companyId =! '') {
-                Company.findById(companyId, function(err, company) {
+            if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
+                Company.findById(companyId, function (err, company) {
                     if (company) {
-                        company.remove(function(err) {
+                        company.remove(function (err) {
                             if(err) res.send({ code: 1, desc: err.message});
                             res.send({ code: 0, desc: 'Company deleted'});
                         });
@@ -192,7 +197,7 @@ exports.companyLogin = function (req, res) {
     var password = body.password;
 
     var companyId = req.params.id || '';
-    if (companyId != '') {
+    if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
         Company.findById(companyId, function (err, company) {
             if (!err && company) {
                 if (company.password != null) {

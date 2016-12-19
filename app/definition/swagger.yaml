@@ -625,7 +625,7 @@ paths:
     post:
       tags:
         - Token
-      description: Generar JWT
+      description: Generar JWT - ID de usuario o empresa (1 día)
       # used as the method name of the controller
       operationId: generateToken
       parameters:
@@ -762,11 +762,13 @@ definitions:
         description: Ubicación de la empresa
         type: string
       date:
-        description: Fecha de ingreso
+        description: Fecha de ingreso (yyyy-mm-dd)
         type: string
+        format: date
       dateOut:
-        description: Fecha de salida (True - Actualidad)
+        description: Fecha de salida (yyyy-mm-dd / True para Actualidad)
         type: string
+        format: date
       description:
         description: Descripción
         type: string

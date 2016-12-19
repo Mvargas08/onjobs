@@ -6,14 +6,14 @@ var User = require('../models/user');
 exports.findAllUsers = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.find(function(err, users) {
+            User.find(function (err, users) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
@@ -29,14 +29,14 @@ exports.findAllUsers = function(req, res) {
 exports.findById = function(req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.findById(req.params.id, function(err, user) {
+            User.findById(req.params.id, function (err, user) {
                 if(err) {
                     res.send({ code: 1, desc: err.message});
                 } else {
@@ -53,7 +53,7 @@ exports.addUser = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
@@ -76,7 +76,7 @@ exports.addUser = function(req, res) {
                 score: req.body.score
             });
 
-            user.save(function(err, u) {
+            user.save(function (err, u) {
                 if(err) res.send({ code: 1, desc: err.message});
                 res.send(u);
             });
@@ -103,7 +103,7 @@ exports.updateUser = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
@@ -111,30 +111,35 @@ exports.updateUser = function(req, res) {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             var userID = req.params.id || '';
-            if (userID != '') {
-                User.findById(userID, function(err, user) {
-                    
-                    if (email != '') user.email = email;                
-                    if (name != '') user.name = name;
-                    if (lastname != '') user.lastname = lastname;
-                    if (rut != '') user.rut = rut;
-                    if (birthdate != '') user.birthdate = birthdate;
-                    if (profession != '') user.profession = profession;
-                    if (experience != '') user.experience = experience;
-                    if (region != '') user.region = region;
-                    if (city != '') user.city = city;
-                    if (descripcion != '') user.descripcion = descripcion;
-                    if (flag != '') user.flag = flag;
-                    if (recomendation != '') user.recomendation = recomendation;
-                    if (score != '') user.score = score;
 
-                    user.save(function(err) {
-                        if(err) res.send({ code: 1, desc: err.message});
-                        res.send(user);
-                    });
+            if (userID.match(/^[0-9a-fA-F]{24}$/)) {
+                User.findById(userID, function (err, user) {
+                    if (!err && user) {
+
+                        if (email != '') user.email = email;
+                        if (name != '') user.name = name;
+                        if (lastname != '') user.lastname = lastname;
+                        if (rut != '') user.rut = rut;
+                        if (birthdate != '') user.birthdate = birthdate;
+                        if (profession != '') user.profession = profession;
+                        if (experience != '') user.experience = experience;
+                        if (region != '') user.region = region;
+                        if (city != '') user.city = city;
+                        if (descripcion != '') user.descripcion = descripcion;
+                        if (flag != '') user.flag = flag;
+                        if (recomendation != '') user.recomendation = recomendation;
+                        if (score != '') user.score = score;
+
+                        user.save(function (err, u) {
+                            if(err) res.send({ code: 1, desc: err.message});
+                            res.send(u);
+                        });
+                    } else {
+                        res.send({ code: 2, desc: "User doesn't exist"});
+                    }
                 });
             } else {
-                res.send({ code: 1, desc: 'User ID is required'});
+                res.send({ code: 3, desc: 'User ID is required'});
             }
 
         }
@@ -146,21 +151,21 @@ exports.deleteUser = function(req, res) {
 
     var token = req.headers.authorization;
     // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
           res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            User.findById(req.params.id, function(err, user) {
+            User.findById(req.params.id, function (err, user) {
                 if (user) {
-                    user.remove(function(err) {
+                    user.remove(function (err) {
                         if(err) res.send({ code: 1, desc: err.message});
                         res.send({ code: 0, desc: 'User deleted'});
                     });
                 } else {
-                    res.send({ code: 2, desc: "User don't exist"});
+                    res.send({ code: 2, desc: "User doesn't exist"});
                 }
             });
         }
