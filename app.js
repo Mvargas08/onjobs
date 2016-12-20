@@ -3,6 +3,7 @@ var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var passport = require('passport');
 
 // Connect Database MongoDB With Mongoose
 mongoose.connect('mongodb://localhost/onJobs', function(err, res) {
@@ -13,7 +14,10 @@ mongoose.connect('mongodb://localhost/onJobs', function(err, res) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-require('./app/routes/routes')(app);
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport);
+require('./app/routes/routes')(app, passport);
 
 var port = process.env.PORT || 3000;
 

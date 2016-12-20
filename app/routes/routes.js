@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function (app, passport) {
 
 	var UserController = require('../controllers/userController');
 	var CompanyController = require('../controllers/companyController');
@@ -43,4 +43,30 @@ module.exports = function (app) {
 	// Json Web Token
 	app.post('/onjobs/v1/token/:id', jwtController.resetToken);
 	app.get('/onjobs/v1/token', jwtController.generateToken);
+
+	// Google Authentication
+    app.get('/onjobs/v1/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+    app.get('/onjobs/v1/auth/google/callback', passport.authenticate('google', {successRedirect : '/profile', failureRedirect : '/'}));
+
+    // Linkedin Authentication
+    app.get('/onjobs/v1/auth/linkedin',passport.authenticate('linkedin'));
+	app.get('/onjobs/v1/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/login' }),function(req, res) {
+																													// Successful authentication, redirect home.
+																													res.redirect('/');
+																												});
+
+    // Facebook Authentication
+    app.get('/onjobs/v1/auth/facebook', passport.authenticate('facebook'));
+	app.get('/onjobs/v1/auth/facebook/callback',passport.authenticate('facebook', { successRedirect: '/profile', failureRedirect: '/login' }));
+};
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
 }

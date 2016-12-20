@@ -16,7 +16,18 @@ var user = new Schema({
 	recomendation: String,
 	score: Number,
 	status: { type: Boolean, default: false },
-	token: String
+	google: {
+		id: String,
+		token: String,
+		email: String,
+		name: String
+	},
+	facebook: {
+		id: String,
+		token: String,
+		email: String,
+		name: String
+	}
 });
 
 module.exports = mongoose.model('User', user);

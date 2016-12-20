@@ -708,6 +708,54 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /regions/:
+    get:
+      tags:
+        - Georeferencia
+      description: Obtener regiones
+      # used as the method name of the controller
+      operationId: getRegions
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /cities/:
+    get:
+      tags:
+        - Georeferencia
+      description: Obtener ciudades
+      # used as the method name of the controller
+      operationId: getCities
+      parameters:
+        - name: authorization
+          in: header
+          description: Json Web Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /webpay/:id/:
     post:
       tags:
