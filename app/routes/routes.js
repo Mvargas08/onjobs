@@ -34,10 +34,11 @@ module.exports = function (app) {
 	// Empresas
 	app.get('/onjobs/v1/company', CompanyController.findAllCompanys);
 	app.post('/onjobs/v1/company', CompanyController.addCompany);
+	app.post('/onjobs/v1/company/login', CompanyController.companyLogin);
 	app.get('/onjobs/v1/company/:id', CompanyController.findCompanyById);
+	app.get('/onjobs/v1/company/:id/resetPassword', CompanyController.resetPassword);
 	app.put('/onjobs/v1/company/:id', CompanyController.updateCompany);
 	app.delete('/onjobs/v1/company/:id', CompanyController.deleteCompany);
-	app.post('/onjobs/v1/company/:id/login', CompanyController.companyLogin);
 
 	// Json Web Token
 	app.post('/onjobs/v1/token/:id', jwtController.generateToken);

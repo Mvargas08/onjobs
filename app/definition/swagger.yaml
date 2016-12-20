@@ -527,11 +527,6 @@ paths:
       # used as the method name of the controller
       operationId: addCompany
       parameters:
-        - name: authorization
-          in: header
-          description: Json Web Token
-          required: true
-          type: string
         - name: data
           in: body
           required: true
@@ -623,7 +618,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /company/:id/login/:
+  /company/login/:
     post:
       tags:
         - Empresa
@@ -636,6 +631,24 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/CompanyLogin"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /company/:id/resetPassword/:
+    get:
+      tags:
+        - Empresa
+      description: Reestablecer contraseña
+      # used as the method name of the controller
+      operationId: resetPassword
       responses:
         "200":
           description: Success

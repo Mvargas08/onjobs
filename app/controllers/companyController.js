@@ -1,10 +1,11 @@
 var jwt    = require('jsonwebtoken');
+var generator = require('generate-password');
 var config = require('../util/config');
 var encrypt = require('../util/encrypt');
 var User = require('../models/user');
 var Company = require('../models/company');
 
-//GET - Return all company in the DB
+// GET - Return all company in the DB
 exports.findAllCompanys = function (req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -31,7 +32,7 @@ exports.findAllCompanys = function (req, res) {
     });
 };
 
-//GET - Return a company with specified ID
+// GET - Return a company with specified ID
 exports.findCompanyById = function (req, res) {
     var token = req.headers.authorization;
     // verifies secret and checks exp
@@ -63,50 +64,44 @@ exports.findCompanyById = function (req, res) {
     });
 };
 
-//POST - Insert a new Company in the DB
+// POST - Insert a new Company in the DB
 exports.addCompany = function (req, res) {
 
-    var token = req.headers.authorization;
-    // verifies secret and checks exp
-    jwt.verify(token, config.jwt.secret, function (err, decoded) {
-        if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
-          console.log('INFO: Fallo en la autenticación de Token: ' + err);
-        } else {
-            // if everything is good, save to request for use in other routes
-            req.decoded = decoded;
-            encrypt.cryptPassword(req.body.password, function (err, hash) {
-                if (!err && hash) {
-                    var password =  hash;
-                    var company = new Company ({
-                        email: req.body.email,
-                        password: password,
-                        name: req.body.name,
-                        phone: req.body.lastname,
-                        businessName: req.body.businessName,
-                        rut: req.body.rut,
-                        entry: req.body.entry,
-                        businessTurn: req.body.businessTurn,
-                        region: req.body.region,
-                        city: req.body.city,
-                        location: req.body.location,
-                        flag: req.body.flag,
-                        recomendation: req.body.recomendation
-                    });
+    var pws = req.body.password || '';
+    if (pws != '') {
+        encrypt.cryptPassword(pws, function (err, hash) {
+            if (!err && hash) {
+                var password =  hash;
+                var company = new Company ({
+                    email: req.body.email,
+                    password: password,
+                    name: req.body.name,
+                    phone: req.body.lastname,
+                    businessName: req.body.businessName,
+                    rut: req.body.rut,
+                    entry: req.body.entry,
+                    businessTurn: req.body.businessTurn,
+                    region: req.body.region,
+                    city: req.body.city,
+                    location: req.body.location,
+                    flag: req.body.flag,
+                    recomendation: req.body.recomendation
+                });
 
-                    company.save(function (err, c) {
-                        if(err) res.send({ code: 1, desc: err.message});
-                        res.send(c);
-                    });
-                } else {
-                    res.send({ _id: 3, descripcion: 'Body must be provided or Error encrypt password :: ' + err.message});
-                }
-            });
-        }
-    });
+                company.save(function (err, c) {
+                    if(err) res.send({ code: 1, desc: err.message});
+                    res.send(c);
+                });
+            } else {
+                res.send({ _id: 2, descripcion: 'Body must be provided or Error encrypt password :: ' + err.message});
+            }
+        });
+    } else {
+        res.send({ _id: 3, descripcion: 'Body must be provided password'});
+    }
 };
 
-//PUT - Update a register already exists
+// PUT - Update a register already exists
 exports.updateCompany = function (req, res) {
     
     var email = req.body.email || '';
@@ -165,7 +160,7 @@ exports.updateCompany = function (req, res) {
     });
 };
 
-//DELETE - Delete a Company with specified ID
+// DELETE - Delete a Company with specified ID
 exports.deleteCompany = function (req, res) {
 
     var token = req.headers.authorization;
@@ -204,41 +199,77 @@ exports.companyLogin = function (req, res) {
     var email = body.email;
     var password = body.password;
 
+    Company.findOne({email:email}, function (err, company) {
+        if (!err && company) {
+            console.log(company);
+            if (company.password != null) {
+                encrypt.comparePassword(password, company.password, function (err, isPasswordMatch) {
+                    if (!err && isPasswordMatch) {
+                        var comp = {
+                            email: company.email
+                        }
+                        var token = jwt.sign(comp, config.jwt.secret, {
+                          expiresIn: '1d' // expires in 24 hours
+                        });
+                        company.token = token;
+                        company.save(function (err, c) {
+                            if (!err) {
+                                res.send(c);
+                            } else {
+                                res.send({ _id: 0, descripcion: 'Token not save'});
+                                console.log('ERROR: ' + err);
+                            }
+                        });
+                    } else {
+                        res.send({ _id: 0, descripcion: 'Incorrect password'});
+                    }
+                });
+            } else {
+                res.send({ _id: 1, descripcion: 'Company password not found'});
+            }
+        } else {
+            res.send({ _id: 2, descripcion: 'Company not exist'});
+        }
+    });
+};
+
+// GET - Reset Password
+exports.resetPassword = function (req, res) {
+
     var companyId = req.params.id || '';
     if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
         Company.findById(companyId, function (err, company) {
-            if (!err && company) {
-                if (company.password != null) {
-                    encrypt.comparePassword(password, company.password, function (err, isPasswordMatch) {
-                        if (!err && isPasswordMatch) {
-                            var comp = {
-                                id: companyId,
-                                email: company.email
-                            }
-                            var token = jwt.sign(comp, config.jwt.secret, {
-                              expiresIn: '1d' // expires in 24 hours
-                            });
-                            company.token = token;
+            if(err) {
+                res.send({ code: 1, desc: 'Company ID not found :: ' + err.message});
+            } else {
+                if (company) {
+                    console.log('GET /objobs/v1/company/' + companyId + '/resetPassword');
+                    var psw = generator.generate({length: 10,numbers: true});
+                    encrypt.cryptPassword(psw, function (err, hash) {
+                        if (!err && hash) {
+                            var password =  hash;
+                            company.password = password;
                             company.save(function (err, c) {
                                 if (!err) {
-                                    res.send(c);
+                                    // Send mail Reset Password
+                                    Mailer.sendMailResetPassword(company, psw);
                                 } else {
-                                    res.send({ _id: 0, descripcion: 'Token not save'});
+                                    res.send({ _id: 0, descripcion: 'Password not reset'});
                                     console.log('ERROR: ' + err);
                                 }
                             });
                         } else {
-                            res.send({ _id: 0, descripcion: 'Incorrect password'});
+                            res.send({ _id: 1, descripcion: 'Error en modulo encrypt password'});
+                            console.log('Error: en modulo encrypt password: ' + err);
                         }
                     });
+                    res.send(company);
                 } else {
-                    res.send({ _id: 1, descripcion: 'Company password not found'});
+                    res.send({ code: 2, desc: "Company doesn't exist"});
                 }
-            } else {
-                res.send({ _id: 2, descripcion: 'Company not exist'});
             }
         });
     } else {
-        res.send({ code: 3, desc: 'Company ID is required'});
+        res.send({ code: 1, desc: 'Company ID is required'});
     }
 };
