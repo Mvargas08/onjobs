@@ -2,6 +2,7 @@ var jwt    = require('jsonwebtoken');
 var generator = require('generate-password');
 var config = require('../util/config');
 var encrypt = require('../util/encrypt');
+var Mailer = require('../util/mailer');
 var User = require('../models/user');
 var Company = require('../models/company');
 
@@ -131,6 +132,7 @@ exports.updateCompany = function (req, res) {
                 Company.findById(companyId, function (err, company) {
 
                     if (!err && company) {
+
                         if (email != '') company.email = email;
                         if (name != '') company.name = name;
                         if (phone != '') company.phone = phone;
@@ -201,7 +203,7 @@ exports.companyLogin = function (req, res) {
 
     Company.findOne({email:email}, function (err, company) {
         if (!err && company) {
-            console.log(company);
+            
             if (company.password != null) {
                 encrypt.comparePassword(password, company.password, function (err, isPasswordMatch) {
                     if (!err && isPasswordMatch) {
@@ -236,14 +238,15 @@ exports.companyLogin = function (req, res) {
 // GET - Reset Password
 exports.resetPassword = function (req, res) {
 
-    var companyId = req.params.id || '';
-    if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
-        Company.findById(companyId, function (err, company) {
+    var body = req.body;
+    var email = body.email || '';
+    if (email != '') {
+        Company.findOne({email:email}, function (err, company) {
             if(err) {
-                res.send({ code: 1, desc: 'Company ID not found :: ' + err.message});
+                res.send({ code: 1, desc: 'Company not found :: ' + err.message});
             } else {
                 if (company) {
-                    console.log('GET /objobs/v1/company/' + companyId + '/resetPassword');
+                    console.log('GET /objobs/v1/company/resetPassword');
                     var psw = generator.generate({length: 10,numbers: true});
                     encrypt.cryptPassword(psw, function (err, hash) {
                         if (!err && hash) {
@@ -270,6 +273,6 @@ exports.resetPassword = function (req, res) {
             }
         });
     } else {
-        res.send({ code: 1, desc: 'Company ID is required'});
+        res.send({ code: 1, desc: 'Company email is required'});
     }
 };

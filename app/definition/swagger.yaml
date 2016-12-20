@@ -642,13 +642,19 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /company/:id/resetPassword/:
-    get:
+  /company/resetPassword/:
+    post:
       tags:
         - Empresa
       description: Reestablecer contraseña
       # used as the method name of the controller
       operationId: resetPassword
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/CompanyResetPassword"
       responses:
         "200":
           description: Success
@@ -664,15 +670,33 @@ paths:
     post:
       tags:
         - Token
-      description: Generar JWT - ID de usuario o empresa (1 día)
+      description: Generar nuevo JWT - ID de usuario o empresa (1 día)
       # used as the method name of the controller
-      operationId: generateToken
+      operationId: resetToken
       parameters:
         - name: data
           in: body
           required: true
           schema:
             $ref: "#/definitions/JWT"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /token/:
+    get:
+      tags:
+        - Token
+      description: Generar JWT de prueba (1 hora)
+      # used as the method name of the controller
+      operationId: generateToken
       responses:
         "200":
           description: Success
@@ -885,6 +909,12 @@ definitions:
         description: Contraseña
         type: string
         format: password
+  CompanyResetPassword:
+    type: object
+    properties:
+      email:
+        description: Email de empresa
+        type: string
   JWT:
     type: object
     properties:

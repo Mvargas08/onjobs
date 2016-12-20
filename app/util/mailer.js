@@ -10,7 +10,7 @@ exports.sendMailResetPassword = function (company, psw) {
 	    from: '"OnJobs " <'+ config.mail.user +'>', // sender address
 	    to: company.email + ', ' + config.mail.admin, // list of receivers
 	    subject: 'OnJobs - Nueva contraseña', // Subject line
-	    html: 'Hola, ' + Company.businessName + '<br/>' +
+	    html: 'Hola, ' + company.businessName + '<br/>' +
 	    	  '<b> Su contraseña ha cambiado, ahora es:  </b>' + psw // html body
 	};
 
