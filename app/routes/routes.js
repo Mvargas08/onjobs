@@ -46,18 +46,15 @@ module.exports = function (app, passport) {
 
 	// Google Authentication
     app.get('/onjobs/v1/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
-    app.get('/onjobs/v1/auth/google/callback', passport.authenticate('google', {successRedirect : '/profile', failureRedirect : '/'}));
+    app.get('/onjobs/v1/auth/google/callback', passport.authenticate('google'), jwtController.generateSocialTokenUser);
 
     // Linkedin Authentication
     app.get('/onjobs/v1/auth/linkedin',passport.authenticate('linkedin'));
-	app.get('/onjobs/v1/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/login' }),function(req, res) {
-																													// Successful authentication, redirect home.
-																													res.redirect('/');
-																												});
+	app.get('/onjobs/v1/auth/linkedin/callback', passport.authenticate('linkedin'), jwtController.generateSocialTokenUser);
 
     // Facebook Authentication
     app.get('/onjobs/v1/auth/facebook', passport.authenticate('facebook'));
-	app.get('/onjobs/v1/auth/facebook/callback',passport.authenticate('facebook', { successRedirect: '/profile', failureRedirect: '/login' }));
+	app.get('/onjobs/v1/auth/facebook/callback',passport.authenticate('facebook'), jwtController.generateSocialTokenUser);
 };
 
 // route middleware to make sure a user is logged in

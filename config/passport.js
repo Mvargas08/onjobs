@@ -1,5 +1,5 @@
 // load all the things we need
-var LinkedInStrategy    = require('passport-linkedin').OAuth2Strategy;
+var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
@@ -51,8 +51,14 @@ module.exports = function(passport) {
                     // set all of the relevant information
                     newUser.google.id = profile.id;
                     newUser.google.token = token;
-                    newUser.google.name = profile.displayName;
+                    newUser.google.name = profile.name.givenName;
+                    newUser.google.lastname = profile.name.familyName;
                     newUser.google.email = profile.emails[0].value; // pull the first email
+
+                    newUser.email = profile.emails[0].value; // for local user
+                    newUser.name = profile.name.givenName; // for local user
+                    newUser.lastname = profile.name.familyName; // for local user
+                    newUser.provider = profile.provider; // for local user
 
                     // save the user
                     newUser.save(function(err) {
@@ -60,7 +66,6 @@ module.exports = function(passport) {
                             throw err;
                         return done(null, newUser);
                     });
-                    console.log(profile);
                 }
             });
         });
@@ -73,7 +78,7 @@ module.exports = function(passport) {
         clientID        : configAuth.linkedinAuth.clientID,
         clientSecret    : configAuth.linkedinAuth.clientSecret,
         callbackURL     : configAuth.linkedinAuth.callbackURL,
-
+        state           : true
     },
     function(token, refreshToken, profile, done) {
 
@@ -82,7 +87,7 @@ module.exports = function(passport) {
         process.nextTick(function() {
 
             // try to find the user based on their facebook id
-            User.findOne({ 'linkedin.id' : linkedin.id }, function(err, user) {
+            User.findOne({ 'linkedin.id' : profile.id }, function(err, user) {
                 if (err)
                     return done(err);
                 if (user) {
@@ -95,8 +100,14 @@ module.exports = function(passport) {
                     // set all of the relevant information
                     newUser.linkedin.id = profile.id;
                     newUser.linkedin.token = token;
-                    newUser.linkedin.name = profile.name;
+                    newUser.linkedin.name = profile.name.givenName;
+                    newUser.linkedin.lastname = profile.name.familyName;
                     newUser.linkedin.email = profile.emails[0].value;
+
+                    newUser.email = profile.emails[0].value; // for local user
+                    newUser.name = profile.name.givenName; // for local user
+                    newUser.lastname = profile.name.familyName; // for local user
+                    newUser.provider = profile.provider; // for local user
 
                     // save the user
                     newUser.save(function(err) {
@@ -104,7 +115,6 @@ module.exports = function(passport) {
                             throw err;
                         return done(null, newUser);
                     });
-                    console.log(profile);
                 }
             });
         });
@@ -139,8 +149,14 @@ module.exports = function(passport) {
                     // set all of the relevant information
                     newUser.facebook.id = profile.id;
                     newUser.facebook.token = accessToken;
-                    newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+                    newUser.facebook.name = profile.name.givenName;
+                    newUser.facebook.lastname = profile.name.familyName;
                     newUser.facebook.email = profile.emails[0].value;
+
+                    newUser.email = profile.emails[0].value; // for local user
+                    newUser.name = profile.name.givenName; // for local user
+                    newUser.lastname = profile.name.familyName; // for local user
+                    newUser.provider = profile.provider; // for local user
 
                     // save the user
                     newUser.save(function(err) {

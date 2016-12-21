@@ -19,6 +19,8 @@ tags:
     description: Servicios de Autorización
   - name: Recomiendan
     description: Servicios de Recomiendan
+  - name: Georeferencia
+    description: Servicios de Georeferencia
   - name: WebPay
     description: Servicios de metodo de pago
 # 
@@ -160,35 +162,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /users/social/login/:
-    post:
-      tags:
-        - Usuario
-      description: Login de usuario (Social)
-      # used as the method name of the controller
-      operationId: facebook
-      parameters:
-        - name: authorization
-          in: header
-          description: Json Web Token
-          required: true
-          type: string
-        - name: data
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/UserSocialLogin"
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/OnJobsResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /users/report/:
     post:
       tags:
@@ -207,6 +180,42 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/UserReport"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /auth/google/:
+    get:
+      tags:
+        - Usuario
+      description: Autenticación Google - Redirección a google para acceder a la cuenta de usuario
+      # used as the method name of the controller
+      operationId: authenticateGoogle
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /auth/linkedin/:
+    get:
+      tags:
+        - Usuario
+      description: Autenticación Linkedin - Redirección a linkedin para acceder a la cuenta de usuario
+      # used as the method name of the controller
+      operationId: authenticateLinkedin
       responses:
         "200":
           description: Success
@@ -830,15 +839,6 @@ definitions:
       score:
         description: Puntuación
         type: number
-  UserSocialLogin:
-    type: object
-    properties:
-      social:
-        description: Facebook - Google
-        type: string
-      email:
-        description: Correo del usuario
-        type: string
   UserReport:
     type: object
     properties:

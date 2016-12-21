@@ -13,9 +13,11 @@ mongoose.connect('mongodb://localhost/onJobs', function(err, res) {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.session({ secret: 'SECRET' }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 require('./config/passport')(passport);
 require('./app/routes/routes')(app, passport);
 

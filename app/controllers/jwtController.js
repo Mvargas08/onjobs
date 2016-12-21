@@ -1,5 +1,6 @@
 var jwt    = require('jsonwebtoken');
 var config = require('../util/config');
+var User = require('../models/user');
 
 //GET - Return token for use services
 exports.generateToken = function(req, res) {
@@ -13,6 +14,38 @@ exports.generateToken = function(req, res) {
     console.log('GET /objobs/v1/token/' + req.params.id);
     tokenUser.token = token;
     res.send(tokenUser);
+};
+
+//GET - Return token for use services
+exports.generateSocialTokenUser = function(req, res) {
+    
+    User.findById(req.user.id, function (err, user) {
+        if(err) {
+            res.send({ code: 1, desc: 'User ID not found :: ' + err.message});
+        } else {
+            if (user) {
+                var tokenUser = {
+                    id: req.user.id,
+                    email: req.user.email
+                }
+                var token = jwt.sign(tokenUser, config.jwt.secret, {
+                  expiresIn: '1d'
+                });
+                user.token = token;
+                console.log(user);
+                user.save(function (err, u) {
+                    if (!err) {
+                        res.send(u);
+                    } else {
+                        res.send({ _id: 0, descripcion: 'Token not save, login social error in generateSocialTokenUser'});
+                        console.log('ERROR: ' + err);
+                    }
+                });
+            } else {
+                res.send({ code: 2, desc: "User doesn't exist"});
+            }
+        }
+    });
 };
 
 //GET - Return token for use services
