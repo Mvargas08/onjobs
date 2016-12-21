@@ -200,10 +200,10 @@ exports.getReport = function(req, res) {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             User.find({profession:profession, position:position, city:city}, function (err, users) {
-                if (users) {
+                if (!err && users.length != 0) {
                     res.send(users);
                 } else {
-                    res.send({ code: 1, desc: "There are no users to compare"});
+                    res.send({ code: 1, desc: "There are no users to compare (" + users.length + ")"});
                 }
             });
         }
