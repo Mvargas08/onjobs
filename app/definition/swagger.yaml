@@ -168,7 +168,7 @@ paths:
         - Usuario
       description: Reporte de usuario
       # used as the method name of the controller
-      operationId: report
+      operationId: getReport
       parameters:
         - name: authorization
           in: header
@@ -216,6 +216,24 @@ paths:
       description: Autenticación Linkedin - Redirección a linkedin para acceder a la cuenta de usuario
       # used as the method name of the controller
       operationId: authenticateLinkedin
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/OnJobsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /auth/facebook/:
+    get:
+      tags:
+        - Usuario
+      description: Autenticación Facebook - Redirección a Facebook para acceder a la cuenta de usuario
+      # used as the method name of the controller
+      operationId: authenticateFacebook
       responses:
         "200":
           description: Success

@@ -136,7 +136,7 @@ module.exports = function(passport) {
         process.nextTick(function() {
 
             // try to find the user based on their facebook id
-            User.findOne({ 'facebook.id' : facebook.id }, function(err, user) {
+            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
                 if (err)
                     return done(err);
                 if (user) {
@@ -145,17 +145,18 @@ module.exports = function(passport) {
                 } else {
                     // if the user isnt in our database, create a new user
                     var newUser = new User();
-
+                    
                     // set all of the relevant information
                     newUser.facebook.id = profile.id;
-                    newUser.facebook.token = accessToken;
-                    newUser.facebook.name = profile.name.givenName;
-                    newUser.facebook.lastname = profile.name.familyName;
-                    newUser.facebook.email = profile.emails[0].value;
+                    newUser.facebook.token = token || '';
+                    var name = profile.displayName.split(" ");
+                    newUser.facebook.name = profile.name.givenName || name[0];
+                    newUser.facebook.lastname = profile.name.familyName || name[1];
+                    newUser.facebook.email = '';
 
-                    newUser.email = profile.emails[0].value; // for local user
-                    newUser.name = profile.name.givenName; // for local user
-                    newUser.lastname = profile.name.familyName; // for local user
+                    newUser.email = ''; // for local user
+                    newUser.name = profile.name.givenName || name[0];
+                    newUser.lastname = profile.name.familyName || name[1];
                     newUser.provider = profile.provider; // for local user
 
                     // save the user
@@ -164,7 +165,6 @@ module.exports = function(passport) {
                             throw err;
                         return done(null, newUser);
                     });
-                    console.log(profile);
                 }
             });
         });
