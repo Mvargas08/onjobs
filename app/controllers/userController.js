@@ -8,20 +8,20 @@ exports.findAllUsers = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             User.find(function (err, users) {
                 if(err) {
-                    res.send({ code: 1, desc: err.message});
+                    res.status(500).send({ code: 500, desc: err.message});
                 } else {
                     if (users) {
                         console.log('GET /objobs/v1/user')
                         res.send(users);
                     } else {
-                        res.send({ code: 2, desc: "Users doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Users doesn't exist"});
                     }
                 }
             });
@@ -35,20 +35,20 @@ exports.findById = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             User.findById(req.params.id, function (err, user) {
                 if(err) {
-                    res.send({ code: 1, desc: 'User ID not found :: ' + err.message});
+                    res.status(404).send({ code: 404, desc: 'User ID not found :: ' + err.message});
                 } else {
                     if (user) {
                         console.log('GET /objobs/v1/user/' + req.params.id);
                         res.send(user);
                     } else {
-                        res.send({ code: 2, desc: "User doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Users doesn't exist"});
                     }
                 }
             });
@@ -63,7 +63,7 @@ exports.addUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -85,7 +85,7 @@ exports.addUser = function(req, res) {
             });
 
             user.save(function (err, u) {
-                if(err) res.send({ code: 1, desc: err.message});
+                if(err) res.status(500).send({ code: 500, desc: err.message});
                 res.send(u);
             });
         }
@@ -113,7 +113,7 @@ exports.updateUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -139,15 +139,15 @@ exports.updateUser = function(req, res) {
                         if (score != '') user.score = score;
 
                         user.save(function (err, u) {
-                            if(err) res.send({ code: 1, desc: err.message});
+                            if(err) res.status(500).send({ code: 500, desc: err.message});
                             res.send(u);
                         });
                     } else {
-                        res.send({ code: 2, desc: "User doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Users doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 3, desc: 'User ID is required'});
+                res.status(400).send({ code: 400, desc: 'User ID is required'});
             }
 
         }
@@ -161,7 +161,7 @@ exports.deleteUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -169,11 +169,11 @@ exports.deleteUser = function(req, res) {
             User.findById(req.params.id, function (err, user) {
                 if (user) {
                     user.remove(function (err) {
-                        if(err) res.send({ code: 1, desc: err.message});
+                        if(err) res.status(500).send({ code: 500, desc: err.message});
                         res.send({ code: 0, desc: 'User deleted'});
                     });
                 } else {
-                    res.send({ code: 2, desc: "User doesn't exist"});
+                    res.status(404).send({ code: 404, desc: "Users doesn't exist"});
                 }
             });
         }
@@ -194,7 +194,7 @@ exports.getReport = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -203,7 +203,7 @@ exports.getReport = function(req, res) {
                 if (!err && users.length != 0) {
                     res.send(users);
                 } else {
-                    res.send({ code: 1, desc: "There are no users to compare (" + users.length + ")"});
+                    res.status(404).send({ code: 404, desc: "There are no users to compare (" + users.length + ")"});
                 }
             });
         }

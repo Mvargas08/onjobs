@@ -12,20 +12,20 @@ exports.findAllCompanys = function (req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             Company.find(function (err, companys) {
                 if(err) {
-                    res.send({ code: 1, desc: err.message});
+                    res.status(500).send({ code: 500, desc: err.message});
                 } else {
                     if (companys) {
                         console.log('GET /objobs/v1/company')
                         res.send(companys);
                     } else {
-                        res.send({ code: 2, desc: "Companies doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Company doesn't exist"});
                     }
                 }
             });
@@ -39,27 +39,27 @@ exports.findCompanyById = function (req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
-            var companyId = req.params.id || '';
+            var companyId = req.params.id;
             if (companyId.match(/^[0-9a-fA-F]{24}$/)) {
                 Company.findById(companyId, function (err, company) {
                     if(err) {
-                        res.send({ code: 1, desc: 'Company ID not found :: ' + err.message});
+                        res.status(404).send({ code: 404, desc: 'Company ID not found :: ' + err.message});
                     } else {
                         if (company) {
                             console.log('GET /objobs/v1/company/' + companyId);
                             res.send(company);
                         } else {
-                            res.send({ code: 2, desc: "Company doesn't exist"});
+                            res.status(400).send({ code: 404, desc: "Company doesn't exist"});
                         }
                     }
                 });
             } else {
-                res.send({ code: 1, desc: 'Company ID is required'});
+                res.status(400).send({ code: 400, desc: 'Company ID is required'});
             }
         }
     });
@@ -94,11 +94,11 @@ exports.addCompany = function (req, res) {
                     res.send(c);
                 });
             } else {
-                res.send({ _id: 2, descripcion: 'Body must be provided or Error encrypt password :: ' + err.message});
+                res.status(500).send({ code: 500, descripcion: 'Body must be provided or Error encrypt password :: ' + err.message});
             }
         });
     } else {
-        res.send({ _id: 3, descripcion: 'Body must be provided password'});
+        res.status(400).send({ code: 400, descripcion: 'Body must be provided password'});
     }
 };
 
@@ -122,7 +122,7 @@ exports.updateCompany = function (req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -147,16 +147,15 @@ exports.updateCompany = function (req, res) {
                         if (recomendation != '') company.recomendation = recomendation;
 
                         company.save(function (err, c) {
-                            if(err) res.send({ code: 1, desc: err.message});
+                            if(err) res.status(500).send({ code: 500, desc: err.message});
                             res.send(c);
                         });
                     } else {
-                        console.log(err);
-                        res.send({ code: 1, desc: "Company doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Company doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 2, desc: 'Company ID is required'});
+                res.status(400).send({ code: 400, desc: 'Company ID is required'});
             }
         }
     });
@@ -169,7 +168,7 @@ exports.deleteCompany = function (req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -179,15 +178,15 @@ exports.deleteCompany = function (req, res) {
                 Company.findById(companyId, function (err, company) {
                     if (company) {
                         company.remove(function (err) {
-                            if(err) res.send({ code: 1, desc: err.message});
-                            res.send({ code: 0, desc: 'Company deleted'});
+                            if(err) res.status(500).send({ code: 500, desc: err.message});
+                            res.send({ code: 200, desc: 'Company deleted'});
                         });
                     } else {
-                        res.send({ code: 2, desc: "Company don't exist"});
+                        res.status(404).send({ code: 404, desc: "Company doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 1, desc: 'Company ID is required'});
+                res.status(400).send({ code: 400, desc: 'Company ID is required'});
             }
         }
     });
@@ -218,19 +217,19 @@ exports.companyLogin = function (req, res) {
                             if (!err) {
                                 res.send(c);
                             } else {
-                                res.send({ _id: 0, descripcion: 'Token not save'});
+                                res.status(500).send({ code: 500, descripcion: 'Token not save'});
                                 console.log('ERROR: ' + err);
                             }
                         });
                     } else {
-                        res.send({ _id: 0, descripcion: 'Incorrect password'});
+                        res.status(400).send({ code: 400, descripcion: 'Incorrect password'});
                     }
                 });
             } else {
-                res.send({ _id: 1, descripcion: 'Company password not found'});
+                res.status(404).send({ code: 404, descripcion: 'Company password not found'});
             }
         } else {
-            res.send({ _id: 2, descripcion: 'Company not exist'});
+            res.status(404).send({ code: 404, desc: "Company doesn't exist"});
         }
     });
 };
@@ -243,7 +242,7 @@ exports.resetPassword = function (req, res) {
     if (email != '') {
         Company.findOne({email:email}, function (err, company) {
             if(err) {
-                res.send({ code: 1, desc: 'Company not found :: ' + err.message});
+                res.status(404).send({ code: 404, desc: 'Company not found :: ' + err.message});
             } else {
                 if (company) {
                     console.log('GET /objobs/v1/company/resetPassword');
@@ -256,23 +255,23 @@ exports.resetPassword = function (req, res) {
                                 if (!err) {
                                     // Send mail Reset Password
                                     Mailer.sendMailResetPassword(company, psw);
+                                    res.send(company);
                                 } else {
-                                    res.send({ _id: 0, descripcion: 'Password not reset'});
+                                    res.status(500).send({ code: 500, descripcion: 'Password not reset'});
                                     console.log('ERROR: ' + err);
                                 }
                             });
                         } else {
-                            res.send({ _id: 1, descripcion: 'Error en modulo encrypt password'});
+                            res.status(500).send({ code: 500, descripcion: 'Error en modulo encrypt password'});
                             console.log('Error: en modulo encrypt password: ' + err);
                         }
                     });
-                    res.send(company);
                 } else {
-                    res.send({ code: 2, desc: "Company doesn't exist"});
+                    res.status(404).send({ code: 404, desc: "Company doesn't exist"});
                 }
             }
         });
     } else {
-        res.send({ code: 1, desc: 'Company email is required'});
+        res.status(400).send({ code: 400, desc: 'Company ID is required'});
     }
 };

@@ -15,7 +15,8 @@
     "passport-google-oauth": "^1.0.0",
     "passport-linkedin-oauth2": "^1.4.1",
     "request": "2.74.0",
-    "syntax-error": "1.1.6"
+    "syntax-error": "1.1.6",
+    "wrtc": "0.0.61"
   },
   "api": {
     "name": "OnJobs",

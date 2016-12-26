@@ -37,12 +37,12 @@ exports.generateSocialTokenUser = function(req, res) {
                     if (!err) {
                         res.send(u);
                     } else {
-                        res.send({ _id: 0, descripcion: 'Token not save, login social error in generateSocialTokenUser'});
+                        res.status(500).send({ code: 5000, descripcion: 'Token not save, login social error in generateSocialTokenUser'});
                         console.log('ERROR: ' + err);
                     }
                 });
             } else {
-                res.send({ code: 2, desc: "User doesn't exist"});
+                res.status(404).send({ code: 404, desc: "User doesn't exist"});
             }
         }
     });
@@ -63,6 +63,6 @@ exports.resetToken = function(req, res) {
         tokenUser.token = token;
         res.send(tokenUser);
     } else {
-        res.send({ code: 1, desc: "ID company or user is required"});
+        res.status(400).send({ code: 400, desc: "ID company or user is required"});
     }
 };

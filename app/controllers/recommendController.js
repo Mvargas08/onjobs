@@ -9,7 +9,7 @@ exports.getRecommendations = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -28,7 +28,7 @@ exports.getRecommendations = function(req, res) {
                         console.log('GET /objobs/v1/recommend');
                         res.send({recomendations:recommend});
                     } else {
-                        res.send({ code: 2, desc: "Recommendations not found"});
+                        res.status(404).send({ code: 404, desc: "Recommendations not found"});
                     }
                 }
             }

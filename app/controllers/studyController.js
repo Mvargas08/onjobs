@@ -9,7 +9,7 @@ exports.findStudiesByIdUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -19,14 +19,14 @@ exports.findStudiesByIdUser = function(req, res) {
             if (userID.match(/^[0-9a-fA-F]{24}$/)) {
                 Study.find({userID: userID}, function (err, study) {
                     if(err) {
-                        res.send({ code: 1, desc: err.message});
+                        res.status(500).send({ code: 500, desc: err.message});
                     } else {
                         console.log('GET /onjobs/v1/cv/studies/user/'+ req.params.id);
                         res.send(study);
                     }
                 });
             } else {
-                res.send({ code: 3, desc: 'User ID valided is required'});
+                res.status(400).send({ code: 400, desc: 'User ID valided is required'});
             }
         }
     });
@@ -38,20 +38,20 @@ exports.findStudiesById = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             Study.findById(req.params.id, function (err, st) {
                 if(err) {
-                    res.send({ code: 1, desc: 'Study ID not found :: ' + err.message});
+                    res.status(404).send({ code: 404, desc: 'Study ID not found :: ' + err.message});
                 } else {
                     if (st) {
                         console.log('POST /onjobs/v1/cv/experience/user/'+ req.params.id);
                         res.send(st);
                     } else {
-                        res.send({ code: 2, desc: "Study doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                     }
                 }
             });
@@ -66,7 +66,7 @@ exports.addStudiesUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -86,11 +86,11 @@ exports.addStudiesUser = function(req, res) {
                 });
 
                 study.save(function (err, st) {
-                    if(err) res.send({ code: 1, desc: err.message});
+                    if(err) res.status(500).send({ code: 500, desc: err.message});
                     res.send(st);
                 });
             } else {
-                res.send({ code: 2, desc: 'User ID is required'});
+                res.status(400).send({ code: 400, desc: 'User ID is required'});
             }
         }
     });
@@ -111,7 +111,7 @@ exports.updateStudiesUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -131,15 +131,15 @@ exports.updateStudiesUser = function(req, res) {
                         if (activities != '') study.activities = activities;
 
                         study.save(function (err, e) {
-                            if(err) res.send({ code: 1, desc: err.message});
+                            if(err) res.status(500).send({ code: 500, desc: err.message});
                             res.send(e);
                         });
                     } else {
-                        res.send({ code: 2, desc: "Study doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 3, desc: "Study ID is required or doesn't exist"});
+                res.status(400).send({ code: 400, desc: "Study ID is required or doesn't exist"});
             }
 
         }
@@ -153,7 +153,7 @@ exports.deleteStudiesUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -161,11 +161,11 @@ exports.deleteStudiesUser = function(req, res) {
             Study.findById(req.params.id, function (err, study) {
                 if (study) {
                     study.remove(function (err) {
-                        if(err) res.send({ code: 1, desc: err.message});
+                        if(err) res.status(500).send({ code: 500, desc: err.message});
                         res.send({ code: 0, desc: 'Experience deleted'});
                     });
                 } else {
-                    res.send({ code: 2, desc: "Experience doesn't exist"});
+                    res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                 }
             });
         }

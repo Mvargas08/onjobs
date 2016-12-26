@@ -9,7 +9,7 @@ exports.findExpByIdUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -19,14 +19,14 @@ exports.findExpByIdUser = function(req, res) {
             if (userID.match(/^[0-9a-fA-F]{24}$/)) {
                 Experience.find({userID: userID}, function (err, experiences) {
                     if(err) {
-                        res.send({ code: 1, desc: err.message});
+                        res.status(500).send({ code: 500, desc: err.message});
                     } else {
                         console.log('GET /onjobs/v1/cv/experience/user/'+ req.params.id);
                         res.send(experiences);
                     }
                 });
             } else {
-                res.send({ code: 3, desc: 'User ID valided is required'});
+                res.status(400).send({ code: 400, desc: 'User ID valided is required'});
             }
         }
     });
@@ -38,20 +38,20 @@ exports.findExpById = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
             req.decoded = decoded;
             Experience.findById(req.params.id, function (err, exp) {
                 if(err) {
-                    res.send({ code: 1, desc: 'Experience ID not found :: ' + err.message});
+                    res.status(404).send({ code: 404, desc: 'Experience ID not found :: ' + err.message});
                 } else {
                     if (exp) {
                         console.log('POST /onjobs/v1/cv/experience/user/'+ req.params.id);
                         res.send(exp);
                     } else {
-                        res.send({ code: 2, desc: "Experience doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                     }
                 }
             });
@@ -66,7 +66,7 @@ exports.addExpUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -85,11 +85,11 @@ exports.addExpUser = function(req, res) {
                 });
 
                 experience.save(function (err, exp) {
-                    if(err) res.send({ code: 1, desc: err.message});
+                    if(err) res.status(500).send({ code: 500, desc: err.message});
                     res.send(exp);
                 });
             } else {
-                res.send({ code: 2, desc: 'User ID is required'});
+                res.status(400).send({ code: 400, desc: 'User ID is required'});
             }
         }
     });
@@ -109,7 +109,7 @@ exports.updateExpUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -128,15 +128,15 @@ exports.updateExpUser = function(req, res) {
                         if (description != '') exp.description = description;
 
                         exp.save(function (err, e) {
-                            if(err) res.send({ code: 1, desc: err.message});
+                            if(err) res.status(500).send({ code: 500, desc: err.message});
                             res.send(e);
                         });
                     } else {
-                        res.send({ code: 2, desc: "Experience doesn't exist"});
+                        res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                     }
                 });
             } else {
-                res.send({ code: 3, desc: "Experience ID is required or doesn't exist"});
+                res.status(404).send({ code: 404, desc: "Experience ID is required or doesn't exist"});
             }
 
         }
@@ -150,7 +150,7 @@ exports.deleteExpUser = function(req, res) {
     // verifies secret and checks exp
     jwt.verify(token, config.jwt.secret, function (err, decoded) {
         if (err) {
-          res.send({ _id: -1, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
+          res.status(401).send({ code: 401, descripcion: 'Fallo en la autenticación de Token (' + err.message + ')'});
           console.log('INFO: Fallo en la autenticación de Token: ' + err);
         } else {
             // if everything is good, save to request for use in other routes
@@ -158,11 +158,11 @@ exports.deleteExpUser = function(req, res) {
             Experience.findById(req.params.id, function (err, exp) {
                 if (exp) {
                     exp.remove(function (err) {
-                        if(err) res.send({ code: 1, desc: err.message});
-                        res.send({ code: 0, desc: 'Experience deleted'});
+                        if(err) res.status(500).send({ code: 500, desc: err.message});
+                        res.send({ code: 200, desc: 'Experience deleted'});
                     });
                 } else {
-                    res.send({ code: 2, desc: "Experience doesn't exist"});
+                    res.status(404).send({ code: 404, desc: "Experience doesn't exist"});
                 }
             });
         }
