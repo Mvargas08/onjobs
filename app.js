@@ -4,6 +4,7 @@ var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var logger = require('express-logger');
 
 var config = require('./app/util/config');
 
@@ -34,6 +35,8 @@ mongoose.connect(mongodbUri, function(err, res) {
   if (err) console.log('ERROR: Conectando con la BD: ' + err);
   else console.log('Conexión con la BD '+ app.settings.env +' - '+ db +' exitosa');
 });
+
+app.use(logger({path:'./app/logs/onjobs-logs.txt'}));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

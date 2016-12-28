@@ -1,0 +1,1 @@
+::1 - - [Wed, 28 Dec 2016 16:16:04 GMT] "GET /onjobs/v1/token/ HTTP/1.1" 200 175 "-" "Mozilla/5.0 (X11; Linux i686 (x86_64)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"

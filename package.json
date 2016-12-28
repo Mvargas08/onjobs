@@ -6,6 +6,7 @@
     "bcrypt": "0.8.7",
     "body-parser": "~1.0.1",
     "express": "3.x.x",
+    "express-logger": "0.0.3",
     "generate-password": "^1.2.0",
     "jsonwebtoken": "^7.2.0",
     "mongoose": "latest",
