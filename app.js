@@ -5,10 +5,34 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 
+var config = require('./app/util/config');
+
+var dev = false;
+if(dev) {
+	// Database
+	host = config.development.database.host;
+	dbPort = config.development.database.port;
+	db = config.development.database.name;
+	// Enviroment
+	port = config.development.port;
+	mongodbUri = 'mongodb://'+host+'/'+db;
+} else {
+	// Database
+	user = config.production.database.user;
+	pass = config.production.database.pass;
+	host = config.production.database.host;
+	dbPort = config.production.database.port;
+	db = config.production.database.name;
+	// Enviroment
+	port = config.production.port;
+	app.settings.env = 'production';
+	mongodbUri = 'mongodb://'+user+':'+pass+'@'+host+':'+dbPort+'/'+db;
+}
+
 // Connect Database MongoDB With Mongoose
-mongoose.connect('mongodb://localhost/onJobs', function(err, res) {
+mongoose.connect(mongodbUri, function(err, res) {
   if (err) console.log('ERROR: Conectando con la BD: ' + err);
-  else console.log('Conexión con la BD onJobs exitosa');
+  else console.log('Conexión con la BD '+ app.settings.env +' - '+ db +' exitosa');
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,8 +44,6 @@ app.use(passport.session());
 
 require('./config/passport')(passport);
 require('./app/routes/routes')(app, passport);
-
-var port = process.env.PORT || 3000;
 
 app.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api of onJobs!' });   
